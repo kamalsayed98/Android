@@ -85,7 +85,7 @@ public class ClientRigister extends AppCompatActivity {
 
         /* rigister  the client  */
         if(checkNetworkConnection()){
-            new HTTPAsyncTask().execute("http://abdullahhaidar92-001-site1.etempurl.com/api/Clients/PostClient");
+            new HTTPAsyncTask().execute("http://kamalsmrsyd-001-site1.htempurl.com/api/Clients/PostClient");
 
         }
     }
@@ -125,6 +125,9 @@ public class ClientRigister extends AppCompatActivity {
             if (result.equals("OK")) {
                 editor.putString("username",username.getText().toString());
                 editor.putString("user","Client");
+                editor.putString("name",name.getText().toString());
+                editor.putString("password",password.getText().toString());
+                editor.putString("phoneNumber",phone.getText().toString());
                 editor.apply();
                 editor.commit();
                 goToClientPage();
@@ -143,7 +146,7 @@ public class ClientRigister extends AppCompatActivity {
 
          private void goToClientPage() {
 
-        startActivity(new Intent(this,MapsClient.class));
+        startActivity(new Intent(this,ClientLoginPage.class));
         }
 
         private String HttpPost(String myUrl) throws IOException, JSONException {

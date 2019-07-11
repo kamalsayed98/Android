@@ -35,6 +35,7 @@ public class pop extends Activity {
     public void payment(View v){
         startActivity(new Intent(this,ClientPayment.class));
     }
+
     public void account(View v){
         startActivity(new Intent(this,ClientAccount.class));
 

@@ -132,12 +132,18 @@ public class MapsClient extends FragmentActivity
 
         markerPoints = new ArrayList<LatLng>();
 
+      init();
+
+     }
+
+    private void init() {
         mMag.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 geoLocate();
             }
         });
+
         mSearchText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -164,13 +170,13 @@ public class MapsClient extends FragmentActivity
         mOpt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                 startActivity(new Intent(getApplicationContext(),pop.class));
+                startActivity(new Intent(getApplicationContext(),pop.class));
             }
         });
 
 
+    }
 
-     }
 
     private void buildAlertMessageNoGps() {
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -206,10 +212,10 @@ public class MapsClient extends FragmentActivity
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        if(ContextCompat.checkSelfPermission(this,Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
-                && ContextCompat.checkSelfPermission(this,Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED ){
+        if(ContextCompat.checkSelfPermission(this,Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
             buildGoogleApiClient();
-            mMap.setMyLocationEnabled(true);if ( !manager.isProviderEnabled( LocationManager.GPS_PROVIDER ) ) {
+            mMap.setMyLocationEnabled(true);
+            if ( !manager.isProviderEnabled( LocationManager.GPS_PROVIDER ) ) {
                 buildAlertMessageNoGps();
             }else {
                 getDeviceLocation();
@@ -442,25 +448,7 @@ public class MapsClient extends FragmentActivity
 
     }
 
-    private LatLng getDeviceLatLng() {
-        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
-        try{
-            final Task location = mFusedLocationProviderClient.getLastLocation();
-            location.addOnCompleteListener(new OnCompleteListener() {
-                @Override
-                public void onComplete(@NonNull Task task) {
-                    if (task.isSuccessful()) {
-                        Location currentLocation = (Location) task.getResult();
-                        myLatLng = new LatLng(currentLocation.getLatitude(),currentLocation.getLongitude());
-                    }
-                }
-            });
-        }catch (SecurityException e){
-            e.printStackTrace();
-        }
-        return myLatLng;
-    }
 
     private void geoLocate() {
         String searchString = mSearchText.getText().toString();
@@ -485,7 +473,9 @@ public class MapsClient extends FragmentActivity
         MarkerOptions options = new MarkerOptions()
                 .position(latLng)
                 .title(title);
-        if(title.equals("current location")){  options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));  }
+        if(title.equals("current location")){
+            options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+        }
         else
         {
             mMap.addMarker(options);

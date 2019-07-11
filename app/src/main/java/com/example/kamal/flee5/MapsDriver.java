@@ -88,7 +88,7 @@ public class MapsDriver extends FragmentActivity
     private LocationRequest locationRequest;
     private Location lastLocation;
     private Marker currentUserLocationMarker;
-    private static final int Request_User_Location_Code = 99;
+        private static final int Request_User_Location_Code = 99;
     private FusedLocationProviderClient mFusedLocationProviderClient;
 
     private String jsonString;
@@ -254,7 +254,7 @@ public class MapsDriver extends FragmentActivity
 
     private void updateDeliveriesSammary() {
         if(checkNetworkConnection()) {
-            new MapsDriver.StartDeliverySummaryHTTPAsyncTask().execute("http://abdullahhaidar92-001-site1.etempurl.com/api/DeliverySummaries/UpdateDeliveryInfo");
+            new MapsDriver.StartDeliverySummaryHTTPAsyncTask().execute("http://kamalsmrsyd-001-site1.htempurl.com/api/DeliverySummaries/UpdateDeliveryInfo");
         }
     }
 
@@ -277,18 +277,18 @@ public class MapsDriver extends FragmentActivity
         startActivity(new Intent(this,ChoosePage.class));
     }
  public void engineOnOff(View v){
-        if(engineOnOff.getText().toString().equals("Turn Off Engine")){
+        if(engineRunning==1){
             engineOnOff.setText("Turn On Engine");
             engineRunning=0;
         }else{
-            engineOnOff.setText("Turn off Engine");
+            engineOnOff.setText("Turn Off Engine");
             engineRunning=1;
         }
     }
 
     public void AnswerDelivery(View v){
         if(checkNetworkConnection()){
-            new MapsDriver.HTTPAsyncTask().execute("http://abdullahhaidar92-001-site1.etempurl.com/api/Deliveries/AnsweredDeliveries");
+            new MapsDriver.HTTPAsyncTask().execute("http://kamalsmrsyd-001-site1.htempurl.com/api/Deliveries/AnsweredDeliveries");
             engineRunning = 1;
         }
 
@@ -315,12 +315,55 @@ public class MapsDriver extends FragmentActivity
         protected void onPostExecute(String result) {
             if (result.equals("OK")) {
                 if(jsonString.length() < 4){
-                    Toast.makeText(MapsDriver.this,"no delivery available "+ jsonString +jsonString.length(),Toast.LENGTH_LONG).show();
+                    Toast.makeText(MapsDriver.this,"no delivery available ",Toast.LENGTH_LONG).show();
                 }else {
                     try {
+                       /* jsonString = "[\n" +
 
-/*
-                        jsonString = "[\n" +
+                                "    {\n" +
+                                "        \"id\": 14,\n" +
+                                "        \"time\": \"2019-06-15T07:39:31.2174167\",\n" +
+                                "        \"company\": null,\n" +
+                                "        \"client\": null,\n" +
+                                "        \"vehicle\": null,\n" +
+                                "        \"driver\": null,\n" +
+                                "        \"sourceLongtitude\": 36.035482812499993,\n" +
+                                "        \"sourceLatitude\": 33.683424674991556,\n" +
+                                "        \"sourceCity\": \"Rif Dimashq\",\n" +
+                                "        \"destinationLongtitude\": 38.276693749999993,\n" +
+                                "        \"destinationLatitude\": 34.85459367701273,\n" +
+                                "        \"destinationCity\": \"Homs\",\n" +
+                                "        \"quantity\": 6,\n" +
+                                "        \"answered\": true,\n" +
+                                "        \"started\": false,\n" +
+                                "        \"finished\": false,\n" +
+                                "        \"optimalDistance\": 0,\n" +
+                                "        \"optimalTime\": 0,\n" +
+                                "        \"optimalFuelConsumption\": 0\n" +
+                                "    },\n" +
+                                "    {\n" +
+                                "        \"id\": 15,\n" +
+                                "        \"time\": \"2019-06-15T07:40:26.8115965\",\n" +
+                                "        \"company\": null,\n" +
+                                "        \"client\": null,\n" +
+                                "        \"vehicle\": null,\n" +
+                                "        \"driver\": null,\n" +
+                                "        \"sourceLongtitude\": 37.463705468749993,\n" +
+                                "        \"sourceLatitude\": 34.958205836965625,\n" +
+                                "        \"sourceCity\": \"Homs\",\n" +
+                                "        \"destinationLongtitude\": 35.420248437499993,\n" +
+                                "        \"destinationLatitude\": 33.564498080450122,\n" +
+                                "        \"destinationCity\": \"Sidon District\",\n" +
+                                "        \"quantity\": 6,\n" +
+                                "        \"answered\": true,\n" +
+                                "        \"started\": false,\n" +
+                                "        \"finished\": false,\n" +
+                                "        \"optimalDistance\": 0,\n" +
+                                "        \"optimalTime\": 0,\n" +
+                                "        \"optimalFuelConsumption\": 0\n" +
+                                "    }\n" +
+                                "]";*/
+                   /*     jsonString = "[\n" +
                                 "    {\n" +
                                 "        \"id\": 172,\n" +
                                 "        \"time\": \"2019-08-15T00:00:00\",\n" +
@@ -406,10 +449,12 @@ public class MapsDriver extends FragmentActivity
                                 "        \"optimalFuelConsumption\": 100\n" +
                                 "    }\n" +
                                 "]";
+
 */
 
                         JSONArray jr = new JSONArray(jsonString);
                         if(markerPoints.size() !=0) markerPoints.clear();
+                        LatLng origin,dest;
                         for(int i =0 ;i<jr.length();i++){
                             JSONObject obj = (JSONObject)jr.getJSONObject(i);
                             deliveriesId.add(obj.getInt("id"));
@@ -426,17 +471,16 @@ public class MapsDriver extends FragmentActivity
 
                             } else{
                                 MarkerOptions options = new MarkerOptions()
-                                        .position(markerPoints.get(j));
+                                                              .position(markerPoints.get(j));
                                 mMap.addMarker(options);
                             }
-
 
                             MarkerOptions options2 = new MarkerOptions()
                                     .position(markerPoints.get(j+1));
                             mMap.addMarker(options2);
 
-                            LatLng origin =markerPoints.get(j);
-                            LatLng dest =markerPoints.get(j+1);
+                             origin =markerPoints.get(j);
+                             dest =markerPoints.get(j+1);
 
                             String url = getDirectionsUrl(origin, dest);
 
@@ -444,11 +488,10 @@ public class MapsDriver extends FragmentActivity
                             downloadTask.execute(url);
                          }
 
-
-                         for(int i = 0;i<jr.length()-1;i++){
+                         for(int i = 0 ; i<jr.length()-1 ; i++){
                             int j = (2*i)+1;
-                            LatLng origin =markerPoints.get(j);
-                            LatLng dest =markerPoints.get(j+1);
+                             origin = markerPoints.get(j);
+                             dest = markerPoints.get(j+1);
 
                             String url = getDirectionsUrl(origin, dest);
 
@@ -457,15 +500,13 @@ public class MapsDriver extends FragmentActivity
                         }
 
 
-                        LatLng origin = new LatLng(lastLocation.getLatitude(),lastLocation.getLongitude());
-                        LatLng dest =markerPoints.get(0);
+                         origin = new LatLng(lastLocation.getLatitude(),lastLocation.getLongitude());
+                         dest =markerPoints.get(0);
 
                         String url = getDirectionsUrl(origin, dest);
 
                         MapsDriver.DownloadTask1 downloadTask1 = new MapsDriver.DownloadTask1();
                         downloadTask1.execute(url);
-
-
 
                             } catch (Throwable t) {
                                 Log.e("Driver Answered error", "Could not parse malformed JSON: \"" + jsonString + "\"");
@@ -505,8 +546,8 @@ public class MapsDriver extends FragmentActivity
             super.onPostExecute(result);
 
             MapsDriver.ParserTask parserTask = new MapsDriver.ParserTask();
-
-            // Invokes the thread for parsing the JSON data
+            //Invokes the thread for parsing the JSON data
+            Log.d("result for parser Tast",result);
             parserTask.execute(result);
         }
     }
@@ -522,6 +563,7 @@ public class MapsDriver extends FragmentActivity
 
             try{
                 jObject = new JSONObject(jsonData[0]);
+                Log.d("first jasn object to the rout", jsonData[0]);
                 DirectionsParser parser = new DirectionsParser();
 
                 // Starts parsing data
@@ -537,35 +579,27 @@ public class MapsDriver extends FragmentActivity
         protected void onPostExecute(List<List<HashMap<String, String>>> result) {
             ArrayList<LatLng> points = null;
             PolylineOptions lineOptions = null;
-
             // Traversing through all the routes
             for(int i=0;i<result.size();i++){
                 points = new ArrayList<LatLng>();
                 lineOptions = new PolylineOptions();
-
                 // Fetching i-th route
                 List<HashMap<String, String>> path = result.get(i);
-
                 // Fetching all the points in i-th route
                 for(int j=0;j<path.size();j++){
                     HashMap<String,String> point = path.get(j);
-
                     double lat = Double.parseDouble(point.get("lat"));
                     double lng = Double.parseDouble(point.get("lng"));
                     LatLng position = new LatLng(lat, lng);
-
                     points.add(position);
                 }
-
                 // Adding all the points in the route to LineOptions
-
-                lineOptions.addAll(points);
-                // lineOptions.width(2);
+                    lineOptions.addAll(points);
+                    // lineOptions.width(2);
                     lineOptions.color(Color.RED);
-
             }
             // Drawing polyline in the Google Map for the i-th route
-
+            if(lineOptions!=null)
             mMap.addPolyline(lineOptions);
 
         }
@@ -595,7 +629,6 @@ public class MapsDriver extends FragmentActivity
             while( ( line = br.readLine()) != null){
                 sb.append(line);
             }
-
             data = sb.toString();
 
             br.close();
@@ -664,8 +697,7 @@ public class MapsDriver extends FragmentActivity
 
         while ((line = reader.readLine()) != null) {
             buffer.append(line + "\n");
-            Log.d("Response: ", "> " + line);
-
+            Log.d("Response for answer deliveries: ", "> " + line);
         }
 
         return buffer.toString();
@@ -702,11 +734,7 @@ public class MapsDriver extends FragmentActivity
         }
         return isConnected;
     }
-
-
     /***********************************************************************/
-
-
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
@@ -717,6 +745,19 @@ public class MapsDriver extends FragmentActivity
             mMap.setMyLocationEnabled(true);
 
         }
+        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+            @Override
+            public void onMapClick(LatLng latLng) {
+                if(logout.getVisibility() == View.VISIBLE) {
+                    if(logout.getVisibility() == View.VISIBLE){
+                        logout.setVisibility(View.INVISIBLE);
+                        startDeliveries.setVisibility(View.INVISIBLE);
+                        engineOnOff.setVisibility(View.INVISIBLE);
+
+                    }
+                }
+            }
+        });
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
@@ -753,7 +794,7 @@ public class MapsDriver extends FragmentActivity
                                             public void onClick(DialogInterface dialog, int which) {
                                                 m_StartOdometer = odo.getText().toString();
                                                 if(checkNetworkConnection()) {
-                                                    new MapsDriver.StartDeliverySummaryHTTPAsyncTask().execute("http://abdullahhaidar92-001-site1.etempurl.com/api/DeliverySummaries/StartDeliverySummary");
+                                                    new MapsDriver.StartDeliverySummaryHTTPAsyncTask().execute("http://kamalsmrsyd-001-site1.htempurl.com/api/DeliverySummaries/StartDeliverySummary");
                                                 }
                                                 markerPoints.remove(0);
                                                 hideSoftKeyboard();
@@ -803,7 +844,7 @@ public class MapsDriver extends FragmentActivity
                                             public void onClick(DialogInterface dialog, int which) {
                                                 m_StartOdometer = odo.getText().toString();
                                                 if(checkNetworkConnection()) {
-                                                    new MapsDriver.StartDeliverySummaryHTTPAsyncTask().execute("http://abdullahhaidar92-001-site1.etempurl.com/api/DeliverySummaries/FinishDeliverySummary");
+                                                    new MapsDriver.StartDeliverySummaryHTTPAsyncTask().execute("http://kamalsmrsyd-001-site1.htempurl.com/api/DeliverySummaries/FinishDeliverySummary");
                                                 }
                                                 markerPoints.remove(0);
                                                 deliveriesId.remove(0);
@@ -832,6 +873,7 @@ public class MapsDriver extends FragmentActivity
         });
 
     }
+
     private void getDeviceLocation() {
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         try{
@@ -853,9 +895,9 @@ public class MapsDriver extends FragmentActivity
         }
 
     }
+
     public  void moveCamera(LatLng latLng, float zoom,String title){
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,zoom));
-
 
         MarkerOptions options = new MarkerOptions()
                 .position(latLng)
@@ -875,7 +917,6 @@ public class MapsDriver extends FragmentActivity
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
     }
-
 
     public boolean checkUserLocationPermission(){
         if(ContextCompat.checkSelfPermission(this,Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
@@ -967,14 +1008,9 @@ public class MapsDriver extends FragmentActivity
     }
 
     @Override
-    public void onConnectionSuspended(int i) {
-
-    }
-
+    public void onConnectionSuspended(int i) {    }
     @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
-    }
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {    }
 
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
@@ -1051,7 +1087,7 @@ public class MapsDriver extends FragmentActivity
         conn.setRequestProperty("Content-Type", "application/json; charset=utf-8");
         // 2. build JSON object
         JSONObject jsonObject = null;
-        if(myUrl.equals("http://abdullahhaidar92-001-site1.etempurl.com/api/DeliverySummaries/StartDeliverySummary")){
+        if(myUrl.equals("http://kamalsmrsyd-001-site1.htempurl.com/api/DeliverySummaries/StartDeliverySummary")){
             jsonObject = StartDeliverySummaryJsonObject();
             // 3. add JSON content to POST request body
             setPostRequestContent(conn, jsonObject);
@@ -1062,7 +1098,7 @@ public class MapsDriver extends FragmentActivity
             jsonStartDelivery = getJsonFile(conn);
             return conn.getResponseMessage()+"Start";
         }else{
-            if(myUrl.equals("http://abdullahhaidar92-001-site1.etempurl.com/api/DeliverySummaries/FinishDeliverySummary")){
+            if(myUrl.equals("http://kamalsmrsyd-001-site1.htempurl.com/api/DeliverySummaries/FinishDeliverySummary")){
                 jsonObject = FinishDeliverySummaryJsonObject();
                 // 3. add JSON content to POST request body
                 setPostRequestContent(conn, jsonObject);
@@ -1073,7 +1109,7 @@ public class MapsDriver extends FragmentActivity
                 jsonFinishDelivery = getJsonFile(conn);
                 return conn.getResponseMessage()+"Finish";
             }else{
-                if(myUrl.equals("http://abdullahhaidar92-001-site1.etempurl.com/api/DeliverySummaries/UpdateDeliveryInfo")){
+                if(myUrl.equals("http://kamalsmrsyd-001-site1.htempurl.com/api/DeliverySummaries/UpdateDeliveryInfo")){
                     jsonObject = UpdateDeliverySummaryJsonObject();
                     // 3. add JSON content to POST request body
                     setPostRequestContent(conn, jsonObject);

@@ -41,13 +41,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         mainTextView = (TextView)findViewById(R.id.mainTextView);
 
-
-           if(isServecesOk())
-        {
-             openCurrentPage();
-            //startActivity(new Intent(this,MapsClient.class));
-
-        }
+       // startActivity(new Intent(this,MapsClient.class));
+        if(isServecesOk())  {   openCurrentPage();    }
     }
 
 

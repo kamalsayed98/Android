@@ -28,6 +28,8 @@ import java.net.URL;
 public class ClientLastOrder extends AppCompatActivity {
 
     SharedPreferences prefs;
+    SharedPreferences.Editor editor;
+
     String jsonString = "";
     TextView deliveryId,quentity,deliveryTime,sourceCity,sourceLat,sourceLng,destCity,destLat,destLng,isStarted,isAnswered,isFinished;
 
@@ -35,6 +37,8 @@ public class ClientLastOrder extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         prefs= getSharedPreferences(MainActivity.USER_SHARED_PREFERENCES, MODE_PRIVATE);
+        editor= getSharedPreferences(MainActivity.USER_SHARED_PREFERENCES, MODE_PRIVATE).edit();
+
         if(prefs.getInt("deliveryId",0) == 0){
             setContentView(R.layout.activiity_client_last_order_2);
             return;
@@ -56,7 +60,7 @@ public class ClientLastOrder extends AppCompatActivity {
 
 
         if(checkNetworkConnection()){
-            new ClientLastOrder.HTTPAsyncTask().execute("http://abdullahhaidar92-001-site1.etempurl.com/api/Deliveries/GetClientDelivery");
+            new ClientLastOrder.HTTPAsyncTask().execute("http://kamalsmrsyd-001-site1.htempurl.com/api/Deliveries/GetClientDelivery");
         }
     }
     public boolean checkNetworkConnection() {
@@ -92,9 +96,7 @@ public class ClientLastOrder extends AppCompatActivity {
         protected void onPostExecute(String result) {
             if (result.equals("OK")) {
                 try{
-                    JSONObject obj = new JSONObject(jsonString);
-
-
+                JSONObject obj = new JSONObject(jsonString);
                 deliveryId.setText(String.valueOf(obj.getInt("id")));
                 quentity.setText(String.valueOf(obj.getInt("quantity")));
                 deliveryTime.setText(obj.getString("time"));
@@ -122,6 +124,7 @@ public class ClientLastOrder extends AppCompatActivity {
                     isFinished.setTextColor(Color.RED);
                 }else{
                     isFinished.setTextColor(Color.GREEN);
+                    editor.putInt("deliveryId",0);
                 }
                 } catch (Throwable t) {
                     Log.e("My App", "Could not parse malformed JSON: \"" + jsonString + "\"");
@@ -196,7 +199,5 @@ public class ClientLastOrder extends AppCompatActivity {
         writer.close();
         os.close();
     }
-
-
 
     }

@@ -39,7 +39,7 @@ public class ClientLoginPage extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_client_login_page);
         username = (EditText)findViewById(R.id.username);
-        password = (EditText)findViewById(R.id.password);
+        password = (EditText)findViewById(R.id.etPassword);
 
         editor= getSharedPreferences(MainActivity.USER_SHARED_PREFERENCES, MODE_PRIVATE).edit();
 
@@ -49,7 +49,7 @@ public class ClientLoginPage extends AppCompatActivity {
         //this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
         if(checkNetworkConnection()){
-            new HTTPAsyncTask().execute("http://abdullahhaidar92-001-site1.etempurl.com/api/Clients/GetClient");
+            new HTTPAsyncTask().execute("http://kamalsmrsyd-001-site1.htempurl.com/api/Clients/GetClient");
         }
 
     }

@@ -8,6 +8,8 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.method.HideReturnsTransformationMethod;
+import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -39,15 +41,17 @@ public class DriverLoginPage extends AppCompatActivity {
         setContentView(R.layout.activity_driver_login_page);
         editor= getSharedPreferences(MainActivity.USER_SHARED_PREFERENCES, MODE_PRIVATE).edit();
         username = (EditText)findViewById(R.id.username);
-        password = (EditText)findViewById(R.id.password);
+        password = (EditText)findViewById(R.id.etPassword);
 
 
     }
 
     public void Login(View v){
         if(checkNetworkConnection()){
-            new HTTPAsyncTask().execute("http://abdullahhaidar92-001-site1.etempurl.com/api/Drivers/GetDriver");
+            new HTTPAsyncTask().execute("http://kamalsmrsyd-001-site1.htempurl.com/api/Drivers/GetDriver");
         }
+    }
+    public void showPassword(View v){
     }
 
     public boolean checkNetworkConnection() {

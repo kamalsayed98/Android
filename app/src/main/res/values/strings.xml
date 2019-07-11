@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Flee5</string>
+    <string name="app_name">Fleet5</string>
     <string name="title_activity_maps_client">Map</string>
     <string name="title_activity_maps_driver">Map</string>
     <string name="title_activity_maps_client2">Map</string>

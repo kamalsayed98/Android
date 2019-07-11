@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -40,6 +41,7 @@ public class AsignDelivery extends AppCompatActivity {
     double srcLat,srcLng,destLat,destLng;
     SharedPreferences prefs ;
     EditText quentity;
+    Spinner companies;
     String srcCity,destCity,currentDateandTime;
     TextView source,destination;
     FloatingActionButton sourceFloatingAction,destinationFloatingAction;
@@ -52,30 +54,29 @@ public class AsignDelivery extends AppCompatActivity {
         setContentView(R.layout.activity_asign_delivery);
 
         prefs= getSharedPreferences(MainActivity.USER_SHARED_PREFERENCES, MODE_PRIVATE);
-
         quentity = (EditText)findViewById(R.id.quantity);
-
-
-
+        companies = (Spinner)findViewById(R.id.companies);
         final Intent intent = getIntent();
         srcLat = intent.getDoubleExtra("srcLat",0);
         srcLng = intent.getDoubleExtra("srcLng",0);
         destLat = intent.getDoubleExtra("destLat",0);
         destLng = intent.getDoubleExtra("destLng",0);
 
+
+
         try {
             Geocoder geocoder = new Geocoder(this, Locale.getDefault());
             List<Address> srcAddresses = geocoder.getFromLocation(srcLat, srcLng, 1);
-            srcCity = srcAddresses.get(0).getAddressLine(0);
-            List<Address> addresses = geocoder.getFromLocation(destLat, destLng, 1);
-            destCity = addresses.get(0).getAddressLine(0);
+            srcCity = srcAddresses.get(0).getAdminArea().substring(0,srcAddresses.get(0).getAdminArea().length()-11) + ", " + srcAddresses.get(0).getSubAdminArea();
+            List<Address> destAddresses = geocoder.getFromLocation(destLat, destLng, 1);
+            destCity =  destAddresses.get(0).getAdminArea().substring(0,destAddresses.get(0).getAdminArea().length()-11) + ", " + destAddresses.get(0).getSubAdminArea();
+
         }catch (IOException e) {
                 e.printStackTrace();
             }
-        SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
         currentDateandTime = sdf.format(new Date());
-        Toast.makeText(AsignDelivery.this,currentDateandTime,Toast.LENGTH_LONG).show();
-
+        Log.d("time",currentDateandTime);
         source = (TextView)findViewById(R.id.source);
         destination = (TextView)findViewById(R.id.destination);
         source.setText(srcCity);
@@ -151,11 +152,9 @@ public class AsignDelivery extends AppCompatActivity {
             Toast.makeText(this, "enter quentity to be delivared", Toast.LENGTH_LONG).show();
             return;
         }
-
         if(checkNetworkConnection()){
-            new AsignDelivery.HTTPAsyncTask().execute("http://abdullahhaidar92-001-site1.etempurl.com/api/Deliveries/MakeAnOrder");
+            new AsignDelivery.HTTPAsyncTask().execute("http://kamalsmrsyd-001-site1.htempurl.com/api/Deliveries/MakeAnOrder");
         }
-
     }
 
 
@@ -192,7 +191,7 @@ public class AsignDelivery extends AppCompatActivity {
         @Override
         protected void onPostExecute(String result) {
             if (result.equals("OK")) {
-                Toast.makeText(AsignDelivery.this,"order is accepted and id = ",Toast.LENGTH_LONG).show();
+                Toast.makeText(AsignDelivery.this,"order is accepted",Toast.LENGTH_LONG).show();
                 startActivity(new Intent(AsignDelivery.this,MapsClient.class));
             } else {
                 Toast.makeText(AsignDelivery.this,result,Toast.LENGTH_LONG).show();
@@ -239,13 +238,12 @@ public class AsignDelivery extends AppCompatActivity {
 
     private JSONObject buidJsonObject() throws JSONException {
 
-
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.accumulate("Time",currentDateandTime);
             jsonObject.accumulate("CompanyName","Furniture Company");
             jsonObject.accumulate("ClientId",prefs.getInt("id",0));
-            jsonObject.accumulate("SourcceLongtitude",srcLng);
+            jsonObject.accumulate("SourceLongtitude",srcLng);
             jsonObject.accumulate("SourceLatitude",srcLat);
             jsonObject.accumulate("SourceCity",srcCity);
             jsonObject.accumulate("DestinationLongtitude",destLng);
