@@ -52,13 +52,7 @@ public class ClientRigister extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 /*
-
-
-
                 check if the username exists
-
-
-
                 */
 
             }

@@ -14,6 +14,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -45,9 +47,8 @@ public class AsignDelivery extends AppCompatActivity {
     String srcCity,destCity,currentDateandTime;
     TextView source,destination;
     FloatingActionButton sourceFloatingAction,destinationFloatingAction;
-
+    ArrayAdapter<String> adapter;
     SharedPreferences.Editor editor;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -84,6 +85,7 @@ public class AsignDelivery extends AppCompatActivity {
         sourceFloatingAction = (FloatingActionButton)findViewById(R.id.sourceFloatingAction);
         destinationFloatingAction = (FloatingActionButton)findViewById(R.id.destinationFloatingAction);
 
+
         final Intent popIntent = new Intent(this,DelivaryPop.class);
 
         sourceFloatingAction.setOnClickListener(new View.OnClickListener() {
@@ -111,8 +113,104 @@ public class AsignDelivery extends AppCompatActivity {
 
         editor= getSharedPreferences(MainActivity.USER_SHARED_PREFERENCES, MODE_PRIVATE).edit();
 
-
+        if(checkNetworkConnection()){
+            new AsignDelivery.HTTPAsyncTask1().execute("http://kamalsmrsyd-001-site1.htempurl.com/api/Companies/Names");
+        }
     }
+    public class HTTPAsyncTask1 extends AsyncTask<String, Void, String> {
+        @Override
+        protected String doInBackground(String... urls) {
+            // params comes from the execute() call: params[0] is the url.
+            try {
+                try {
+                    return HttpPost1(urls[0]);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    return "Error!";
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                return "Unable to retrieve web page.";
+            }
+        }
+    }
+        private String HttpPost1(String myUrl) throws IOException, JSONException {
+            String result = "";
+
+            URL url = new URL(myUrl);
+
+            // 1. create HttpURLConnection
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("POST");
+            conn.setRequestProperty("Content-Type", "application/json; charset=utf-8");
+            // 2. build JSON object
+            JSONObject jsonObject = new JSONObject();
+            // 3. add JSON content to POST request body
+            setPostRequestContent(conn, jsonObject);
+            // 4. make POST request to the given URL
+            conn.connect();
+            // 5. return response message
+
+            getJsonFile1(conn);
+
+
+            return conn.getResponseMessage()+"";
+        }
+
+
+        private void getJsonFile1(HttpURLConnection conn) throws IOException {
+            BufferedReader reader = null;
+
+            InputStream stream = conn.getInputStream();
+
+            reader = new BufferedReader(new InputStreamReader(stream));
+
+            StringBuffer buffer = new StringBuffer();
+            String line = "";
+            String data = "";
+
+            while ((line = reader.readLine()) != null) {
+                buffer.append(line + "\n");
+                Log.d("Response: ", "> " + line);
+
+            }
+            try {
+                Log.d("companies",buffer.toString());
+              //  buffer.toString();
+                String[] company = { "Furniture Company","Taxi Company"};//buffer.toString().substring(1,buffer.toString().length()-1).split("\"");
+                adapter = new ArrayAdapter<String>(
+                        AsignDelivery.this, android.R.layout.simple_spinner_item, company);
+
+
+                companies.setAdapter(adapter);
+             /*   companies.setOnItemSelectedListener(
+                        new AdapterView.OnItemSelectedListener() {
+                            @Override
+                            public void onItemSelected(AdapterView<?> arg0, View arg1,
+                                                       int arg2, long arg3) {
+                               *//* int position = companies.getSelectedItemPosition();
+                                Toast.makeText(getApplicationContext(),"You have selected
+                                        "+celebrities[+position],Toast.LENGTH_LONG).show();
+// TODO Auto-generated method stub*//*
+                            }
+                            @Override
+                            public void onNothingSelected(AdapterView<?> arg0) {
+// TODO Auto-generated method stub
+                            }
+                        }
+                );*/
+
+
+            } catch (Throwable t) {
+                Log.e("My App", "Could not parse malformed JSON: \"" + buffer.toString() + "\"");
+            }
+
+            editor.apply();
+
+        }
+
+
+        //******************************************************************
 
     private void getJsonFile(HttpURLConnection conn) throws IOException {
         BufferedReader reader = null;
@@ -130,8 +228,6 @@ public class AsignDelivery extends AppCompatActivity {
             Log.d("Response: ", "> " + line);
 
         }
-
-
         try {
 
             JSONObject obj = new JSONObject(buffer.toString());
@@ -149,7 +245,7 @@ public class AsignDelivery extends AppCompatActivity {
 
     public void AssignDelivary(View v) {
         if (quentity.getText().toString().equals("")) {
-            Toast.makeText(this, "enter quentity to be delivared", Toast.LENGTH_LONG).show();
+            Toast.makeText(AsignDelivery.this, "enter quentity to be delivared", Toast.LENGTH_LONG).show();
             return;
         }
         if(checkNetworkConnection()){
@@ -165,7 +261,7 @@ public class AsignDelivery extends AppCompatActivity {
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
         boolean isConnected = false;
         if (!(networkInfo != null && (isConnected = networkInfo.isConnected()))) {
-            Toast.makeText(this,"phone is not connected",Toast.LENGTH_SHORT).show();
+            Toast.makeText(AsignDelivery.this,"phone is not connected",Toast.LENGTH_SHORT).show();
         }
         return isConnected;
     }
@@ -241,7 +337,7 @@ public class AsignDelivery extends AppCompatActivity {
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.accumulate("Time",currentDateandTime);
-            jsonObject.accumulate("CompanyName","Furniture Company");
+            jsonObject.accumulate("CompanyName",companies.getSelectedItem().toString());
             jsonObject.accumulate("ClientId",prefs.getInt("id",0));
             jsonObject.accumulate("SourceLongtitude",srcLng);
             jsonObject.accumulate("SourceLatitude",srcLat);

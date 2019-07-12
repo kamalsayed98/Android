@@ -91,9 +91,6 @@ public class AsynkTask extends AsyncTask<String, Void, String> {
             Log.d("Response: ", "> " + line);
 
         }
-
-
-
         return buffer.toString();
     }
 
