@@ -2,6 +2,7 @@ package com.example.kamal.flee5;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -105,7 +106,7 @@ public class MapsClient extends FragmentActivity
     FloatingActionButton addDelivaryFloatingAction;
 
     LocationManager manager;
-
+    ProgressDialog progDailog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -338,7 +339,16 @@ public class MapsClient extends FragmentActivity
 
     // Fetches data from url passed
     public class DownloadTask extends AsyncTask<String, Void, String> {
-
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progDailog = new ProgressDialog(MapsClient.this);
+            progDailog.setMessage("Loading...");
+            progDailog.setIndeterminate(false);
+            progDailog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progDailog.setCancelable(false);
+            progDailog.show();
+        }
         // Downloading data in non-ui thread
         @Override
         protected String doInBackground(String... url) {
@@ -370,6 +380,7 @@ public class MapsClient extends FragmentActivity
 
     /** A class to parse the Google Places in JSON format */
     private class ParserTask extends AsyncTask<String, Integer, List<List<HashMap<String,String>>> >{
+
 
         // Parsing the data in non-ui thread
         @Override
@@ -423,6 +434,7 @@ public class MapsClient extends FragmentActivity
 
             // Drawing polyline in the Google Map for the i-th route
             mMap.addPolyline(lineOptions);
+            progDailog.dismiss();
         }
     }
 
@@ -474,7 +486,7 @@ public class MapsClient extends FragmentActivity
                 .position(latLng)
                 .title(title);
         if(title.equals("current location")){
-            options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+            //options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
         }
         else
         {
@@ -541,11 +553,11 @@ public class MapsClient extends FragmentActivity
         if(currentUserLocationMarker != null )    { currentUserLocationMarker.remove(); }
 
         LatLng latLng = new LatLng(location.getLatitude(),location.getLongitude());
-        MarkerOptions markerOptions = new MarkerOptions();
+        /*MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.position(latLng);
         markerOptions.title("user current location");
         markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
-        currentUserLocationMarker = mMap.addMarker(markerOptions);
+        currentUserLocationMarker = mMap.addMarker(markerOptions);*/
 
         mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
         mMap.animateCamera(CameraUpdateFactory.zoomBy(12));

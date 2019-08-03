@@ -1,5 +1,6 @@
 package com.example.kamal.flee5;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -33,7 +34,7 @@ public class ClientRigister extends AppCompatActivity {
     EditText name,username,password,conformPassword,phone,adress,birthday;
     SharedPreferences.Editor editor;
     String error;
-
+    ProgressDialog progDailog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,6 +100,16 @@ public class ClientRigister extends AppCompatActivity {
 
     public class HTTPAsyncTask extends AsyncTask<String, Void, String> {
         @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progDailog = new ProgressDialog(ClientRigister.this);
+            progDailog.setMessage("Loading...");
+            progDailog.setIndeterminate(false);
+            progDailog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progDailog.setCancelable(false);
+            progDailog.show();
+        }
+        @Override
         protected String doInBackground(String... urls) {
             // params comes from the execute() call: params[0] is the url.
             try {
@@ -124,8 +135,10 @@ public class ClientRigister extends AppCompatActivity {
                 editor.putString("phoneNumber",phone.getText().toString());
                 editor.apply();
                 editor.commit();
+                progDailog.dismiss();
                 goToClientPage();
             } else {
+                progDailog.dismiss();
                 loginDeny(result);
             }
         }

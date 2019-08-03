@@ -1,5 +1,6 @@
 package com.example.kamal.flee5;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -29,7 +30,7 @@ public class ClientLastOrder extends AppCompatActivity {
 
     SharedPreferences prefs;
     SharedPreferences.Editor editor;
-
+    ProgressDialog progDailog;
     String jsonString = "";
     TextView deliveryId,quentity,deliveryTime,sourceCity,sourceLat,sourceLng,destCity,destLat,destLng,isStarted,isAnswered,isFinished;
 
@@ -76,6 +77,16 @@ public class ClientLastOrder extends AppCompatActivity {
     }
     public class HTTPAsyncTask extends AsyncTask<String, Void, String> {
 
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progDailog = new ProgressDialog(ClientLastOrder.this);
+            progDailog.setMessage("Loading...");
+            progDailog.setIndeterminate(false);
+            progDailog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progDailog.setCancelable(false);
+            progDailog.show();
+        }
         @Override
         protected String doInBackground(String... urls) {
             // params comes from the execute() call: params[0] is the url.
@@ -133,6 +144,7 @@ public class ClientLastOrder extends AppCompatActivity {
             } else {
                 Toast.makeText(ClientLastOrder.this,result,Toast.LENGTH_LONG).show();
             }
+            progDailog.dismiss();
         }
     }
 

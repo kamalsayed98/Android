@@ -1,5 +1,6 @@
 package com.example.kamal.flee5;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -35,6 +36,7 @@ public class DriverLoginPage extends AppCompatActivity {
     EditText username,password;
     SharedPreferences.Editor editor;
     String jsonString;
+    ProgressDialog progDailog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,6 +70,16 @@ public class DriverLoginPage extends AppCompatActivity {
 
     public class HTTPAsyncTask extends AsyncTask<String, Void, String> {
         @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progDailog = new ProgressDialog(DriverLoginPage.this);
+            progDailog.setMessage("Loading...");
+            progDailog.setIndeterminate(false);
+            progDailog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progDailog.setCancelable(false);
+            progDailog.show();
+        }
+        @Override
         protected String doInBackground(String... urls) {
             // params comes from the execute() call: params[0] is the url.
             try {
@@ -88,6 +100,7 @@ public class DriverLoginPage extends AppCompatActivity {
             if (result.equals("OK")) {
                  goToDriverPage();
             } else {
+                progDailog.dismiss();
                 loginDeny(result);
             }
         }
@@ -116,6 +129,7 @@ public class DriverLoginPage extends AppCompatActivity {
         }
 
         editor.apply();
+        progDailog.dismiss();
         startActivity(new Intent(this,MapsDriver.class));
     }
 

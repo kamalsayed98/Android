@@ -9,6 +9,7 @@ import android.location.Geocoder;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
+import android.provider.ContactsContract;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -49,6 +50,8 @@ public class AsignDelivery extends AppCompatActivity {
     FloatingActionButton sourceFloatingAction,destinationFloatingAction;
     ArrayAdapter<String> adapter;
     SharedPreferences.Editor editor;
+    ProgressDialog progDailog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,7 +66,13 @@ public class AsignDelivery extends AppCompatActivity {
         destLat = intent.getDoubleExtra("destLat",0);
         destLng = intent.getDoubleExtra("destLng",0);
 
+        String[] company = { "Furniture Company","Taxi Company"};//buffer.toString().substring(1,buffer.toString().length()-1).split("\"");
+        adapter = new ArrayAdapter<String>(
+                AsignDelivery.this, android.R.layout.simple_spinner_item, company);
 
+
+        companies.setAdapter(adapter);
+        companies.setSelection(0);
 
         try {
             Geocoder geocoder = new Geocoder(this, Locale.getDefault());
@@ -118,6 +127,16 @@ public class AsignDelivery extends AppCompatActivity {
         }
     }
     public class HTTPAsyncTask1 extends AsyncTask<String, Void, String> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progDailog = new ProgressDialog(AsignDelivery.this);
+            progDailog.setMessage("Loading...");
+            progDailog.setIndeterminate(false);
+            progDailog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progDailog.setCancelable(false);
+            progDailog.show();
+        }
         @Override
         protected String doInBackground(String... urls) {
             // params comes from the execute() call: params[0] is the url.
@@ -204,7 +223,7 @@ public class AsignDelivery extends AppCompatActivity {
             } catch (Throwable t) {
                 Log.e("My App", "Could not parse malformed JSON: \"" + buffer.toString() + "\"");
             }
-
+            progDailog.dismiss();
             editor.apply();
 
         }
@@ -269,6 +288,16 @@ public class AsignDelivery extends AppCompatActivity {
 
     public class HTTPAsyncTask extends AsyncTask<String, Void, String> {
         @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progDailog = new ProgressDialog(AsignDelivery.this);
+            progDailog.setMessage("Loading...");
+            progDailog.setIndeterminate(false);
+            progDailog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progDailog.setCancelable(false);
+            progDailog.show();
+        }
+        @Override
         protected String doInBackground(String... urls) {
             // params comes from the execute() call: params[0] is the url.
             try {
@@ -286,8 +315,11 @@ public class AsignDelivery extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(String result) {
+            progDailog.dismiss();
             if (result.equals("OK")) {
                 Toast.makeText(AsignDelivery.this,"order is accepted",Toast.LENGTH_LONG).show();
+
+
                 startActivity(new Intent(AsignDelivery.this,MapsClient.class));
             } else {
                 Toast.makeText(AsignDelivery.this,result,Toast.LENGTH_LONG).show();

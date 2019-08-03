@@ -1,5 +1,7 @@
 package com.example.kamal.flee5;
 
+import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -34,6 +36,8 @@ public class ClientLoginPage extends AppCompatActivity {
     EditText username,password;
     SharedPreferences.Editor editor;
     String jsonString="";
+    ProgressDialog progDailog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,8 +76,19 @@ public class ClientLoginPage extends AppCompatActivity {
 
     public class HTTPAsyncTask extends AsyncTask<String, Void, String> {
         @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progDailog= new ProgressDialog(ClientLoginPage.this);
+            progDailog.setMessage("Loading...");
+            progDailog.setIndeterminate(false);
+            progDailog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progDailog.setCancelable(false);
+            progDailog.show();
+        }
+        @Override
         protected String doInBackground(String... urls) {
             // params comes from the execute() call: params[0] is the url.
+
             try {
                 try {
                     return HttpPost(urls[0]);
@@ -90,15 +105,16 @@ public class ClientLoginPage extends AppCompatActivity {
         @Override
         protected void onPostExecute(String result) {
             if (result.equals("OK")) {
-
                 goToClientPage();
             } else {
+                progDailog.dismiss();
                 loginDeny(result);
             }
         }
     }
 
     private void loginDeny(String result) {
+
             password.setText("");
             Toast.makeText(this,result,Toast.LENGTH_LONG).show();
         }
@@ -125,6 +141,7 @@ public class ClientLoginPage extends AppCompatActivity {
         }
 
         editor.apply();
+        progDailog.dismiss();
 
         startActivity(new Intent(this,MapsClient.class));
 

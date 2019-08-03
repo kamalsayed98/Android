@@ -6,6 +6,7 @@ import android.app.AlertDialog;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -113,7 +114,7 @@ public class MapsDriver extends FragmentActivity
     TextView logout , startDeliveries,engineOnOff;
     static int updateDeliveriesStatus =0;
     static int engineRunning =0;
-
+    ProgressDialog progDailog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -147,9 +148,13 @@ public class MapsDriver extends FragmentActivity
     }
 
     public void drawPoints() {
+        progDailog = new ProgressDialog(MapsDriver.this);
+        progDailog.setMessage("Loading...");
+        progDailog.setIndeterminate(false);
+        progDailog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progDailog.setCancelable(false);
+        progDailog.show();
         try {
-
-
             mMap.clear();
             for (int i = 0; i < (markerPoints.size()/2); i++) {
                 int j = 2 * i;
@@ -205,6 +210,8 @@ public class MapsDriver extends FragmentActivity
         Log.e("Draw Points error", "error while drawing points on map");
         t.printStackTrace();
     }
+        progDailog.dismiss();
+
     }
 
     private void buildAlertMessageNoGps() {
